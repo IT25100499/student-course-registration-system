@@ -232,9 +232,7 @@
             <div class="nav-item" onclick="showTab('schedules')" id="nav-schedules">
                 <i data-lucide="calendar"></i><span>My Schedule</span>
             </div>
-            <div class="nav-item" onclick="showTab('payments')" id="nav-payments">
-                <i data-lucide="credit-card"></i><span>Fees &amp; Payments</span>
-            </div>
+            <!-- nav-payments disabled -->
         </nav>
         <div class="sidebar-footer">
             <div style="padding:0 16px 12px; font-size:12px; color:var(--text-muted)">
@@ -257,7 +255,7 @@
                 </div>
                 <div class="banner-actions">
                     <button class="banner-btn" onclick="showTab('enrollments')"><i data-lucide="plus-circle"></i> Register Course</button>
-                    <button class="banner-btn" onclick="openPaymentModal()"><i data-lucide="credit-card"></i> Pay Tuition</button>
+                    <!-- Pay Tuition Banner Button Disabled -->
                 </div>
             </div>
             
@@ -272,16 +270,8 @@
                     <div class="stat-val" id="card-enrollments">0</div>
                     <div class="stat-lbl">Active Enrollments</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-card-icon" style="background:rgba(6,182,212,0.1);color:var(--accent)"><i data-lucide="book-open"></i></div>
-                    <div class="stat-val" id="card-fee">Rs.0.00</div>
-                    <div class="stat-lbl">Calculated Tuition Fee</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-card-icon" style="background:rgba(239,68,68,0.1);color:var(--danger)"><i data-lucide="credit-card"></i></div>
-                    <div class="stat-val" id="card-due">Rs.0.00</div>
-                    <div class="stat-lbl">Pending Payment</div>
-                </div>
+                <!-- card-fee hidden -->
+                <!-- card-due hidden -->
             </div>
 
             <div class="overview-layout" style="display:grid; grid-template-columns: 2fr 1fr; gap:24px; margin-top:24px">
@@ -302,24 +292,12 @@
                         <h2 style="font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px; margin-bottom:16px"><i data-lucide="award" style="color:var(--accent)"></i> Quick Actions</h2>
                         <div style="display:flex; flex-direction:column; gap:12px">
                             <button class="btn btn-primary" onclick="showTab('enrollments')" style="width:100%; justify-content:center"><i data-lucide="plus-circle"></i> Register for Courses</button>
-                            <button class="btn btn-outline" onclick="openPaymentModal()" style="width:100%; justify-content:center; border-color:var(--border)"><i data-lucide="credit-card"></i> Submit Payment</button>
+                            <!-- Submit Payment Button Disabled -->
                             <button class="btn btn-ghost" onclick="showTab('profile')" style="width:100%; justify-content:center"><i data-lucide="user"></i> Update Profile Info</button>
                         </div>
                     </div>
                     
-                    <div class="overview-card" style="background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px;">
-                        <h2 style="font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px; margin-bottom:16px"><i data-lucide="activity" style="color:var(--success)"></i> Payment Progress</h2>
-                        <div style="margin-bottom:16px">
-                            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px">
-                                <span>Completed Payments</span>
-                                <span id="progressPercent">0%</span>
-                            </div>
-                            <div style="width:100%; height:8px; background:rgba(255,255,255,0.05); border-radius:4px; overflow:hidden">
-                                <div id="progressBar" style="width:0%; height:100%; background:linear-gradient(90deg, var(--primary), var(--accent)); transition: var(--transition)"></div>
-                            </div>
-                        </div>
-                        <p style="font-size:13px; color:var(--text-secondary); line-height:1.5">Payments must be fully completed to activate pending course registrations and attend classes.</p>
-                    </div>
+                    <!-- progress card disabled -->
                 </div>
             </div>
         </div>
@@ -395,20 +373,7 @@
         </div>
 
         <!-- PAYMENTS -->
-        <div class="section" id="sec-payments">
-            <div class="section-header">
-                <div class="page-header"><h1>Tuition Fees &amp; Payments</h1><p>Process your payments and check history (Member 5 UI)</p></div>
-                <button class="btn btn-primary" onclick="openPaymentModal()"><i data-lucide="credit-card"></i> Make Payment</button>
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr><th>Payment ID</th><th>Course</th><th>Amount</th><th>Date</th><th>Method</th><th>Status</th><th>Reference Details</th></tr>
-                    </thead>
-                    <tbody id="paymentTbl"></tbody>
-                </table>
-            </div>
-        </div>
+        <!-- sec-payments disabled -->
     </div>
 </div>
 
@@ -445,7 +410,7 @@
         else if (name === 'courses') loadCourses();
         else if (name === 'enrollments') loadEnrollments();
         else if (name === 'schedules') loadSchedules();
-        else if (name === 'payments') loadPayments();
+        
         lucide.createIcons();
     }
 
@@ -458,27 +423,9 @@
             const student = await (await fetch('/api/students/' + studentId)).json();
             document.getElementById('welcomeName').textContent = student.name;
             document.getElementById('card-type').textContent = student.studentType;
-            document.getElementById('card-fee').textContent = 'Rs.' + student.fee.toLocaleString('en', {minimumFractionDigits: 2});
-            
+                        
             const enrolls = await (await fetch('/api/enrollments?studentId=' + studentId)).json();
             document.getElementById('card-enrollments').textContent = enrolls.filter(e => e.status === 'Active').length;
-
-            const courses = await (await fetch('/api/courses')).json();
-            let totalCourseFees = 0;
-            enrolls.filter(e => e.status !== 'Dropped').forEach(e => {
-                const c = courses.find(c => c.courseId === e.courseId);
-                if (c) totalCourseFees += c.fee;
-            });
-
-            const payments = await (await fetch('/api/payments?studentId=' + studentId)).json();
-            const totalPaid = payments.filter(p => p.status === 'Completed').reduce((sum, p) => sum + p.amount, 0);
-            const pending = totalCourseFees - totalPaid;
-            document.getElementById('card-due').textContent = 'Rs.' + (pending > 0 ? pending : 0).toLocaleString('en', {minimumFractionDigits: 2});
-
-            // Calculate Payment Progress Percentage
-            const progress = totalCourseFees > 0 ? Math.min(100, Math.round((totalPaid / totalCourseFees) * 100)) : 0;
-            document.getElementById('progressPercent').textContent = progress + '%';
-            document.getElementById('progressBar').style.width = progress + '%';
 
             // Populate Quick Schedule (Top 3 active classes)
             const activeCourseIds = enrolls.filter(e => e.status === 'Active').map(e => e.courseId);
@@ -635,22 +582,7 @@
         } catch(e) { console.error(e); }
     }
 
-    async function loadPayments() {
-        try {
-            const payments = await (await fetch('/api/payments?studentId=' + studentId)).json();
-            const tb = document.getElementById('paymentTbl');
-            if(!payments.length) {
-                tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">No payment records yet.</td></tr>`;
-                return;
-            }
-            tb.innerHTML = payments.map(p => `<tr>
-                <td><strong>${p.paymentId}</strong></td><td>${p.courseId}</td><td>Rs.${p.amount.toLocaleString()}</td><td>${p.paymentDate}</td>
-                <td><span class="badge ${p.paymentType==='Online'?'badge-primary':'badge-warning'}">${p.paymentType}</span></td>
-                <td><span class="badge ${p.status==='Completed'?'badge-success':p.status==='Pending'?'badge-warning':'badge-danger'}">${p.status}</span></td>
-                <td>${p.extraField || '-'}</td>
-            </tr>`).join('');
-        } catch(e) { console.error(e); }
-    }
+    /* loadPayments disabled */
 
     // Modal Operations
     let modalActionType = '';
@@ -674,39 +606,7 @@
         lucide.createIcons();
     }
 
-    async function openPaymentModal() {
-        modalActionType = 'payment';
-        document.getElementById('modalTitle').textContent = 'Make Tuition Payment';
-        
-        const enrolls = await (await fetch('/api/enrollments?studentId=' + studentId)).json();
-        const pendingEnrolls = enrolls.filter(e => e.status === 'Pending');
-        const courses = await (await fetch('/api/courses')).json();
-        
-        if (pendingEnrolls.length === 0) {
-            toast('You have no unpaid pending courses!', 'info');
-            return;
-        }
-        
-        window.pendingCoursesMap = {};
-        let selectHtml = `<div class="form-group"><label class="form-label">Select Unpaid Course</label><select class="form-select" id="m-pcid" onchange="updatePaymentAmount()">`;
-        pendingEnrolls.forEach(e => {
-            const c = courses.find(c => c.courseId === e.courseId);
-            if(c) {
-                window.pendingCoursesMap[c.courseId] = c.fee;
-                selectHtml += `<option value="${c.courseId}">${c.courseId} - ${c.courseName} (Rs.${c.fee.toLocaleString()})</option>`;
-            }
-        });
-        selectHtml += `</select></div>`;
-        
-        document.getElementById('modalBody').innerHTML = selectHtml + `
-            <div class="form-group"><label class="form-label">Payment Amount (Rs.)</label><input type="number" class="form-input" id="m-pamt" readonly style="background:var(--bg)"></div>
-            <div class="form-group"><label class="form-label">Payment Method</label><select class="form-select" id="m-ptype" onchange="togglePayFields()"><option value="Online">Online Bank Transfer</option><option value="Cash">Cash Deposit</option></select></div>
-            <div class="form-group" id="payExtraWrap"><label class="form-label">Transaction Reference ID</label><input type="text" class="form-input" id="m-pex" required placeholder="TXN-xxxx-xxxx"></div>`;
-            
-        document.getElementById('modalOverlay').classList.add('active');
-        lucide.createIcons();
-        updatePaymentAmount(); // initialize the amount field
-    }
+    /* openPaymentModal disabled */
     
     window.updatePaymentAmount = function() {
         const cid = document.getElementById('m-pcid').value;
@@ -715,15 +615,7 @@
         }
     };
 
-    function togglePayFields() {
-        const type = document.getElementById('m-ptype').value;
-        const wrap = document.getElementById('payExtraWrap');
-        if(type === 'Online') {
-            wrap.innerHTML = `<label class="form-label">Transaction Reference ID</label><input type="text" class="form-input" id="m-pex" required placeholder="TXN-xxxx-xxxx">`;
-        } else {
-            wrap.innerHTML = `<label class="form-label">Cashier Branch/Location</label><input type="text" class="form-input" id="m-pex" required placeholder="e.g. Colombo Main Office">`;
-        }
-    }
+    /* togglePayFields disabled */
 
     function closeModal() { 
         document.getElementById('modalOverlay').classList.remove('active'); 
@@ -753,26 +645,7 @@
                 } else {
                     toast(data.error || 'Failed to enroll in course', 'error');
                 }
-            } else if (modalActionType === 'payment') {
-                const payload = {
-                    studentId: studentId,
-                    courseId: document.getElementById('m-pcid').value,
-                    amount: parseFloat(document.getElementById('m-pamt').value),
-                    paymentType: document.getElementById('m-ptype').value,
-                    extraField: document.getElementById('m-pex').value,
-                    status: 'Pending'
-                };
-                const res = await fetch('/api/payments', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                if (data.success) {
-                    toast('Payment request submitted successfully for approval!', 'success');
-                    closeModal();
-                    loadPayments();
-                } else {
+            } else {
                     toast(data.error || 'Failed to process payment', 'error');
                 }
             } else if (modalActionType === 'dropEnroll') {

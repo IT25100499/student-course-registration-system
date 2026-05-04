@@ -16,7 +16,7 @@ public class Main {
     static CourseService courseSvc = new CourseService();
     static EnrollmentService enrollSvc = new EnrollmentService(studentSvc, courseSvc);
     static LecturerService lecturerSvc = new LecturerService();
-    static PaymentService paymentSvc = new PaymentService();
+    
     static AdminService adminSvc = new AdminService();
     static ScheduleService scheduleSvc = new ScheduleService();
     static String FRONTEND = "../frontend";
@@ -28,7 +28,7 @@ public class Main {
         server.createContext("/api/courses", Main::handleCourses);
         server.createContext("/api/enrollments", Main::handleEnrollments);
         server.createContext("/api/lecturers", Main::handleLecturers);
-        server.createContext("/api/payments", Main::handlePayments);
+        
         server.createContext("/api/admins", Main::handleAdmins);
         server.createContext("/api/schedules", Main::handleSchedules);
         server.createContext("/api/dashboard", Main::handleDashboard);
@@ -185,37 +185,11 @@ public class Main {
         }else if(m.equals("DELETE")){json(x,scheduleSvc.delete(pts.length>3?pts[3]:"")?200:404,"{\"success\":true}");}
     }
 
-    // --- Payments ---
-    static void handlePayments(HttpExchange x) throws IOException {
-        cors(x);if(x.getRequestMethod().equals("OPTIONS")){json(x,200,"{}");return;}
-        String p=x.getRequestURI().getPath(),m=x.getRequestMethod();String[]pts=p.split("/");
-        if(m.equals("GET")){
-            String q=x.getRequestURI().getQuery();List<Payment>l;
-            if(q!=null&&q.contains("studentId="))l=paymentSvc.getByStudent(q.split("studentId=")[1].split("&")[0]);else l=paymentSvc.getAll();
-            json(x,200,"["+l.stream().map(Payment::toJson).collect(Collectors.joining(","))+"]");
-        }else if(m.equals("POST")){
-            String b=body(x);double amt=0;try{amt=Double.parseDouble(jval(b,"amount"));}catch(Exception e){}
-            Payment py=Payment.fromFileString("AUTO|"+jval(b,"studentId")+"|"+jval(b,"courseId")+"|"+amt+"|"+java.time.LocalDate.now()+"|"+jval(b,"status")+"|"+jval(b,"paymentType")+"|"+jval(b,"extraField"));
-            if(py!=null){paymentSvc.add(py);json(x,201,"{\"success\":true}");}else json(x,400,"{\"error\":\"Invalid\"}");
-        }else if(m.equals("PUT")){
-            String b=body(x),id=pts.length>3?pts[3]:jval(b,"paymentId"),st=jval(b,"status");
-            boolean ok = paymentSvc.updateStatus(id,st);
-            if(ok && "Completed".equalsIgnoreCase(st)) {
-                Payment py = paymentSvc.getAll().stream().filter(px->px.getPaymentId().equalsIgnoreCase(id)).findFirst().orElse(null);
-                if(py!=null) {
-                    enrollSvc.getAll().stream().filter(e->e.getStudentId().equalsIgnoreCase(py.getStudentId())&&e.getCourseId().equalsIgnoreCase(py.getCourseId()))
-                        .forEach(e->enrollSvc.updateStatus(e.getEnrollmentId(),"Active"));
-                }
-            }
-            json(x,ok?200:404,"{\"success\":true}");
-        }else if(m.equals("DELETE")){json(x,paymentSvc.delete(pts.length>3?pts[3]:"")?200:404,"{\"success\":true}");}
-    }
-
     // --- Dashboard ---
     static void handleDashboard(HttpExchange x) throws IOException {
         cors(x);if(x.getRequestMethod().equals("OPTIONS")){json(x,200,"{}");return;}
         json(x,200,"{\"students\":"+studentSvc.getAll().size()+",\"courses\":"+courseSvc.getAll().size()
             +",\"enrollments\":"+enrollSvc.getAll().size()+",\"lecturers\":"+lecturerSvc.getAll().size()
-            +",\"payments\":"+paymentSvc.getAll().size()+",\"revenue\":"+paymentSvc.getTotalRevenue()+"}");
+            + "}");
     }
 }

@@ -48,6 +48,5 @@ public abstract class Person {
         return "Person{name=" + getFullName() + ", role=" + getRole() + "}";
 
 
-
     }
 }

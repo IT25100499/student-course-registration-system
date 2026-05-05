@@ -47,11 +47,6 @@ public abstract class Person {
     public String toString() {
         return "Person{name=" + getFullName() + ", role=" + getRole() + "}";
 
-        //test123
-        // git push test
-
-
-
 
 
     }

@@ -1,0 +1,1 @@
+"# Student templates folder" 

@@ -1,0 +1,8 @@
+S001|Kamal Perera|kamal@email.com|0771234567|Colombo|Undergraduate|2|Computing
+S002|Nimali Silva|nimali@email.com|0779876543|Kandy|Undergraduate|1|Engineering
+S003|Ruwan Fernando|ruwan@email.com|0712345678|Galle|Postgraduate|Machine Learning|Dr. Wijesinghe
+S004|Dilini Jayawardena|dilini@email.com|0761234567|Matara|Undergraduate|3|Business
+S005|Ashan Bandara|ashan@email.com|0781234567|Negombo|Postgraduate|Data Science|Prof. Amarasinghe
+S006|Tharindu Perera|tharindu@email.com|0777777777|Colombo|Undergraduate|2|Computing
+S010|dsfgdfsv|asdvsdgv|asdfgsadg|sdgsadg|Undergraduate|1|Computing
+S007|Kavidu Arosha|kaviduarosha4@gmail.com|0716127625|No.122,yasasiripura,anuradhapura|Undergraduate|1|Computing

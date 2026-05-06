@@ -1,1 +1,0 @@
-"# Lecturers templates folder" 

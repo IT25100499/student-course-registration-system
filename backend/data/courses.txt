@@ -1,0 +1,4 @@
+C001|Object Oriented Programming|3|Computing|40|45000.0|Core|true
+C002|Database Management|3|Computing|35|40000.0|Core|true
+C003|Web Development|3|Computing|30|35000.0|Elective|C001
+C004|Data Structures|4|Computing|40|50000.0|Core|true

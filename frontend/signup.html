@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sign Up - UniReg</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<div class="login-page">
+    <!-- Left Visual Side -->
+    <div class="login-visual">
+        <div class="login-visual-content">
+            <h2>Start Your Journey</h2>
+            <p>Register as an undergraduate or postgraduate student to enroll in courses, track assignments, and view your academic schedule.</p>
+            <div style="margin-top:40px; display:flex; justify-content:center;">
+                <img src="images/student.png" alt="Portal Registration" style="max-width: 90%; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); animation: float 6s ease-in-out infinite;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Form Side -->
+    <div class="login-form-side" style="padding: 24px;">
+        <div class="login-form-container" style="max-width: 440px;">
+            <a href="/" class="nav-logo" style="margin-bottom: 24px;">
+                <svg viewBox="0 0 32 32" fill="none" width="32" height="32"><rect width="32" height="32" rx="8" fill="#4f46e5"/><path d="M16 8L8 13v6l8 5 8-5v-6L16 8z" fill="#fff" opacity="0.9"/><path d="M16 19v5M8 13l8 6 8-6" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+                <span>UniReg</span>
+            </a>
+            <h1>Create Account</h1>
+            <p class="subtitle" style="margin-bottom: 20px;">Student Registration Portal</p>
+
+            <form id="signupForm" onsubmit="handleSignup(event)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label">Student ID</label>
+                        <input type="text" class="form-input" id="sId" placeholder="e.g. S006" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="sName" placeholder="Kamal Perera" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="sEmail" placeholder="kamal@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-input" id="sPhone" placeholder="0771234567" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-input" id="sAddr" placeholder="Colombo, Sri Lanka" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Student Type</label>
+                    <select class="form-select" id="sType" onchange="toggleFields()" required>
+                        <option value="Undergraduate">Undergraduate Student</option>
+                        <option value="Postgraduate">Postgraduate Student</option>
+                    </select>
+                </div>
+
+                <div id="dynamicFields" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label class="form-label" id="lblF1">Year (1-4)</label>
+                        <input type="text" class="form-input" id="sF1" placeholder="e.g. 2" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" id="lblF2">Faculty</label>
+                        <input type="text" class="form-input" id="sF2" placeholder="Computing" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center" id="signupBtn">
+                    <i data-lucide="user-plus" style="width:18px;height:18px"></i> Register Account
+                </button>
+                <p class="form-error" id="signupError" style="margin-top: 12px;"></p>
+            </form>
+
+            <div style="margin-top:20px; text-align:center">
+                <p style="font-size:13px;color:var(--text-secondary)">
+                    Already have an account? <a href="login.html" style="color:var(--primary); font-weight: 600;">Sign in here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+    
+    function toggleFields() {
+        const type = document.getElementById('sType').value;
+        const lbl1 = document.getElementById('lblF1');
+        const lbl2 = document.getElementById('lblF2');
+        const input1 = document.getElementById('sF1');
+        const input2 = document.getElementById('sF2');
+        
+        if (type === 'Undergraduate') {
+            lbl1.textContent = 'Year (1-4)';
+            input1.placeholder = 'e.g. 2';
+            lbl2.textContent = 'Faculty';
+            input2.placeholder = 'Computing';
+        } else {
+            lbl1.textContent = 'Research Area';
+            input1.placeholder = 'Machine Learning';
+            lbl2.textContent = 'Supervisor';
+            input2.placeholder = 'Dr. Wijesinghe';
+        }
+    }
+
+    async function handleSignup(e) {
+        e.preventDefault();
+        const btn = document.getElementById('signupBtn');
+        const err = document.getElementById('signupError');
+        btn.innerHTML = '<i data-lucide="loader-2" style="width:18px;height:18px;animation:spin 1s linear infinite"></i> Processing...';
+        err.classList.remove('visible');
+        
+        const payload = {
+            studentId: document.getElementById('sId').value,
+            name: document.getElementById('sName').value,
+            email: document.getElementById('sEmail').value,
+            phone: document.getElementById('sPhone').value,
+            address: document.getElementById('sAddr').value,
+            studentType: document.getElementById('sType').value,
+            extraField1: document.getElementById('sF1').value,
+            extraField2: document.getElementById('sF2').value
+        };
+
+        try {
+            const res = await fetch('/api/students', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Registration successful! You can now log in using your Student ID and default password (student123).');
+                window.location.href = 'login.html';
+            } else {
+                err.textContent = data.error || 'Registration failed. Student ID may already exist.';
+                err.classList.add('visible');
+                btn.innerHTML = '<i data-lucide="user-plus" style="width:18px;height:18px"></i> Register Account';
+                lucide.createIcons();
+            }
+        } catch(ex) {
+            err.textContent = 'Connection error. Is the server running?';
+            err.classList.add('visible');
+            btn.innerHTML = '<i data-lucide="user-plus" style="width:18px;height:18px"></i> Register Account';
+            lucide.createIcons();
+        }
+    }
+</script>
+<style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
+</body>
+</html>

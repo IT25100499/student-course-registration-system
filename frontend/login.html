@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - UniReg</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<div class="login-page">
+    <!-- Left Visual Side -->
+    <div class="login-visual">
+        <div class="login-visual-content">
+            <h2>Welcome Back</h2>
+            <p>Access your personal or administrative portal to manage course schedules, registrations, and academic records.</p>
+            <div style="margin-top:40px; display:flex; justify-content:center;">
+                <img src="images/student.png" alt="Portal Illustration" style="max-width: 90%; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); animation: float 6s ease-in-out infinite;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Form Side -->
+    <div class="login-form-side">
+        <div class="login-form-container">
+            <a href="/" class="nav-logo">
+                <svg viewBox="0 0 32 32" fill="none" width="32" height="32"><rect width="32" height="32" rx="8" fill="#4f46e5"/><path d="M16 8L8 13v6l8 5 8-5v-6L16 8z" fill="#fff" opacity="0.9"/><path d="M16 19v5M8 13l8 6 8-6" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+                <span>UniReg</span>
+            </a>
+            <h1>Sign in</h1>
+            <p class="subtitle">Enter your credentials to access the dashboard</p>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="loginUser" placeholder="Enter username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="loginPass" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center" id="loginBtn">
+                    <i data-lucide="log-in" style="width:18px;height:18px"></i> Sign In
+                </button>
+                <p class="form-error" id="loginError">Invalid credentials. Please try again.</p>
+            </form>
+
+            <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);text-align:center">
+                <p style="font-size:13px;color:var(--text-muted)">Default credentials</p>
+                <p style="font-size:13px;color:var(--text-secondary);margin-top:4px">
+                    Username: <strong>admin</strong> &nbsp;|&nbsp; Password: <strong>admin123</strong>
+                </p>
+            </div>
+            <div style="margin-top:20px; text-align:center">
+                <p style="font-size:13px;color:var(--text-secondary)">
+                    New student? <a href="signup.html" style="color:var(--primary); font-weight: 600;">Sign up here</a>
+                </p>
+            </div>
+
+            <a href="/" style="display:flex;align-items:center;gap:6px;color:var(--text-muted);font-size:13px;margin-top:24px;justify-content:center">
+                <i data-lucide="arrow-left" style="width:14px;height:14px"></i> Back to home
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+    async function handleLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('loginBtn');
+        const err = document.getElementById('loginError');
+        btn.innerHTML = '<i data-lucide="loader-2" style="width:18px;height:18px;animation:spin 1s linear infinite"></i> Signing in...';
+        err.classList.remove('visible');
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ username: document.getElementById('loginUser').value, password: document.getElementById('loginPass').value })
+            });
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('user_role', data.role);
+                localStorage.setItem('username', data.username);
+                if (data.role === 'student') {
+                    window.location.href = 'student-dashboard.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            }
+            else { err.textContent = data.message || 'Invalid credentials'; err.classList.add('visible'); btn.innerHTML = '<i data-lucide="log-in" style="width:18px;height:18px"></i> Sign In'; lucide.createIcons(); }
+        } catch(ex) { err.textContent = 'Connection error. Is the server running?'; err.classList.add('visible'); btn.innerHTML = '<i data-lucide="log-in" style="width:18px;height:18px"></i> Sign In'; lucide.createIcons(); }
+    }
+</script>
+<style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
+</body>
+</html>

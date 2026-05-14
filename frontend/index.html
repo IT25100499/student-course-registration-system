@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniReg - Student Course Registration System</title>
+    <meta name="description" content="Modern student course registration and management system for universities">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <a href="/" class="nav-logo">
+            <svg viewBox="0 0 32 32" fill="none">
+                <rect width="32" height="32" rx="8" fill="#4f46e5" />
+                <path d="M16 8L8 13v6l8 5 8-5v-6L16 8z" fill="#fff" opacity="0.9" />
+                <path d="M16 19v5M8 13l8 6 8-6" stroke="#fff" stroke-width="1.5" fill="none" />
+            </svg>
+            <span>UniReg</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#stats">About</a>
+            <a href="#cta">Contact</a>
+            <a href="login.html" class="btn btn-primary btn-sm">
+                <i data-lucide="log-in" style="width:16px;height:16px"></i> Login
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-decor hero-decor-1"></div>
+        <div class="hero-decor hero-decor-2"></div>
+        <div class="hero-grid">
+            <div class="hero-content">
+                <div class="hero-badge animate-up">
+                    <i data-lucide="sparkles" style="width:16px;height:16px"></i>
+                    Next-Gen University Platform
+                </div>
+                <h1 class="animate-up-d1">Simplify Your <span>Academic Journey</span></h1>
+                <p class="animate-up-d2">A comprehensive platform for managing student registrations, course
+                    enrollments, lecturer assignments, and payment tracking — all in one place.</p>
+                <div class="hero-actions animate-up-d3">
+                    <a href="login.html" class="btn btn-primary btn-lg">
+                        <i data-lucide="arrow-right" style="width:18px;height:18px"></i> Get Started
+                    </a>
+                    <a href="#features" class="btn btn-outline btn-lg">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-image animate-up-d2">
+                <img src="images/hero.png" alt="University Campus" width="560" height="560">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-label"><i data-lucide="layout-grid" style="width:16px;height:16px"></i> Modules</div>
+        <h2 class="section-title">Everything You Need</h2>
+        <p class="section-desc">Six integrated modules designed to handle every aspect of student course registration
+            and management.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon purple"><i data-lucide="graduation-cap"></i></div>
+                <h3>Student Management</h3>
+                <p>Register undergraduate and postgraduate students with complete profile management and automatic fee
+                    calculation.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon teal"><i data-lucide="book-open"></i></div>
+                <h3>Course Catalog</h3>
+                <p>Manage core and elective courses with credit tracking, department assignments, and enrollment
+                    capacity limits.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon green"><i data-lucide="clipboard-check"></i></div>
+                <h3>Enrollment System</h3>
+                <p>Enroll students into courses with smart validation, full-time and part-time limits, and drop
+                    functionality.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon orange"><i data-lucide="user-check"></i></div>
+                <h3>Lecturer Management</h3>
+                <p>Track permanent and visiting lecturers with workload calculation and course assignment features.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon red"><i data-lucide="credit-card"></i></div>
+                <h3>Payment Tracking</h3>
+                <p>Process online and cash payments, track payment history, and manage payment statuses efficiently.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon blue"><i data-lucide="shield-check"></i></div>
+                <h3>Admin Dashboard</h3>
+                <p>Secure admin login with a comprehensive dashboard showing real-time system statistics and reports.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" id="stats">
+        <div class="section-label">Trusted Platform</div>
+        <h2 class="section-title" style="color:#fff">Built for Scale</h2>
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-num">6</div>
+                <div class="stat-text">Integrated Modules</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">100%</div>
+                <div class="stat-text">OOP Architecture</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">5</div>
+                <div class="stat-text">CRUD Operations</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">24/7</div>
+                <div class="stat-text">System Uptime</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="cta">
+        <div class="cta-card">
+            <img src="images/student.png" alt="Student" width="200" style="margin:0 auto 32px;border-radius:16px;">
+            <h2>Ready to Get Started?</h2>
+            <p>Access the portal to manage your academic registrations and system records.</p>
+            <a href="login.html" class="btn btn-primary btn-lg">
+                <i data-lucide="arrow-right" style="width:18px;height:18px"></i> Go to Login Portal
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Student Course Registration System &copy; 2025. Built with Java &amp; Modern Web Technologies.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+        });
+        // Scroll animation observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.style.opacity = '1'; });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.feature-card, .stat-item, .cta-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+
+</html>

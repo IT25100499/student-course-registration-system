@@ -635,7 +635,22 @@
         } catch(e) { console.error(e); }
     }
 
-    /* loadPayments disabled */
+    async function loadPayments() {
+        try {
+            const payments = await (await fetch('/api/payments?studentId=' + studentId)).json();
+            const tb = document.getElementById('paymentTbl');
+            if(!payments.length) {
+                tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">No payment records yet.</td></tr>`;
+                return;
+            }
+            tb.innerHTML = payments.map(p => `<tr>
+                <td><strong>${p.paymentId}</strong></td><td>${p.courseId}</td><td>Rs.${p.amount.toLocaleString()}</td><td>${p.paymentDate}</td>
+                <td><span class="badge ${p.paymentType==='Online'?'badge-primary':'badge-warning'}">${p.paymentType}</span></td>
+                <td><span class="badge ${p.status==='Completed'?'badge-success':p.status==='Pending'?'badge-warning':'badge-danger'}">${p.status}</span></td>
+                <td>${p.extraField || '-'}</td>
+            </tr>`).join('');
+        } catch(e) { console.error(e); }
+    }
 
     // Modal Operations
     let modalActionType = '';
@@ -659,7 +674,39 @@
         lucide.createIcons();
     }
 
-    /* openPaymentModal disabled */
+    async function openPaymentModal() {
+        modalActionType = 'payment';
+        document.getElementById('modalTitle').textContent = 'Make Tuition Payment';
+        
+        const enrolls = await (await fetch('/api/enrollments?studentId=' + studentId)).json();
+        const pendingEnrolls = enrolls.filter(e => e.status === 'Pending');
+        const courses = await (await fetch('/api/courses')).json();
+        
+        if (pendingEnrolls.length === 0) {
+            toast('You have no unpaid pending courses!', 'info');
+            return;
+        }
+        
+        window.pendingCoursesMap = {};
+        let selectHtml = `<div class="form-group"><label class="form-label">Select Unpaid Course</label><select class="form-select" id="m-pcid" onchange="updatePaymentAmount()">`;
+        pendingEnrolls.forEach(e => {
+            const c = courses.find(c => c.courseId === e.courseId);
+            if(c) {
+                window.pendingCoursesMap[c.courseId] = c.fee;
+                selectHtml += `<option value="${c.courseId}">${c.courseId} - ${c.courseName} (Rs.${c.fee.toLocaleString()})</option>`;
+            }
+        });
+        selectHtml += `</select></div>`;
+        
+        document.getElementById('modalBody').innerHTML = selectHtml + `
+            <div class="form-group"><label class="form-label">Payment Amount (Rs.)</label><input type="number" class="form-input" id="m-pamt" readonly style="background:var(--bg)"></div>
+            <div class="form-group"><label class="form-label">Payment Method</label><select class="form-select" id="m-ptype" onchange="togglePayFields()"><option value="Online">Online Bank Transfer</option><option value="Cash">Cash Deposit</option></select></div>
+            <div class="form-group" id="payExtraWrap"><label class="form-label">Transaction Reference ID</label><input type="text" class="form-input" id="m-pex" required placeholder="TXN-xxxx-xxxx"></div>`;
+            
+        document.getElementById('modalOverlay').classList.add('active');
+        lucide.createIcons();
+        updatePaymentAmount(); // initialize the amount field
+    }
     
     window.updatePaymentAmount = function() {
         const cid = document.getElementById('m-pcid').value;
@@ -668,7 +715,15 @@
         }
     };
 
-    /* togglePayFields disabled */
+    function togglePayFields() {
+        const type = document.getElementById('m-ptype').value;
+        const wrap = document.getElementById('payExtraWrap');
+        if(type === 'Online') {
+            wrap.innerHTML = `<label class="form-label">Transaction Reference ID</label><input type="text" class="form-input" id="m-pex" required placeholder="TXN-xxxx-xxxx">`;
+        } else {
+            wrap.innerHTML = `<label class="form-label">Cashier Branch/Location</label><input type="text" class="form-input" id="m-pex" required placeholder="e.g. Colombo Main Office">`;
+        }
+    }
 
     function closeModal() { 
         document.getElementById('modalOverlay').classList.remove('active'); 
@@ -698,7 +753,26 @@
                 } else {
                     toast(data.error || 'Failed to enroll in course', 'error');
                 }
-            } else {
+            } else if (modalActionType === 'payment') {
+                const payload = {
+                    studentId: studentId,
+                    courseId: document.getElementById('m-pcid').value,
+                    amount: parseFloat(document.getElementById('m-pamt').value),
+                    paymentType: document.getElementById('m-ptype').value,
+                    extraField: document.getElementById('m-pex').value,
+                    status: 'Pending'
+                };
+                const res = await fetch('/api/payments', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    toast('Payment request submitted successfully for approval!', 'success');
+                    closeModal();
+                    loadPayments();
+                } else {
                     toast(data.error || 'Failed to process payment', 'error');
                 }
             } else if (modalActionType === 'dropEnroll') {

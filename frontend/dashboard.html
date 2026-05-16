@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - UniReg</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body style="background:var(--bg)">
+
+<div class="dashboard" id="app" style="display:block">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="nav-logo">
+                <svg viewBox="0 0 32 32" fill="none" width="28" height="28"><rect width="32" height="32" rx="8" fill="#4f46e5"/><path d="M16 8L8 13v6l8 5 8-5v-6L16 8z" fill="#fff" opacity="0.9"/><path d="M16 19v5M8 13l8 6 8-6" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
+                <span>UniReg</span>
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard">
+                <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="showSection('students')" id="nav-students">
+                <i data-lucide="graduation-cap"></i><span>Students</span>
+            </div>
+            <div class="nav-item" onclick="showSection('courses')" id="nav-courses">
+                <i data-lucide="book-open"></i><span>Courses</span>
+            </div>
+            <div class="nav-item" onclick="showSection('enrollments')" id="nav-enrollments">
+                <i data-lucide="clipboard-check"></i><span>Enrollments</span>
+            </div>
+            <div class="nav-item" onclick="showSection('lecturers')" id="nav-lecturers">
+                <i data-lucide="user-check"></i><span>Lecturers</span>
+            </div>
+            <div class="nav-item" onclick="showSection('schedules')" id="nav-schedules">
+                <i data-lucide="calendar"></i><span>Scheduling</span>
+            </div>
+            <div class="nav-item" onclick="showSection('payments')" id="nav-payments">
+                <i data-lucide="credit-card"></i><span>Payments</span>
+            </div>
+            <div class="nav-item" onclick="showSection('admins')" id="nav-admins">
+                <i data-lucide="shield"></i><span>System Users</span>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="window.location.href='login.html'">
+                <i data-lucide="log-out"></i><span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dash-content">
+        <!-- DASHBOARD -->
+        <div class="section active" id="sec-dashboard">
+            <div class="page-header"><h1>Dashboard</h1><p>System overview and statistics</p></div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-card-icon" style="background:rgba(79,70,229,0.1);color:var(--primary)"><i data-lucide="graduation-cap"></i></div><div class="stat-val" id="d-students">0</div><div class="stat-lbl">Students</div></div>
+                <div class="stat-card"><div class="stat-card-icon" style="background:rgba(6,182,212,0.1);color:var(--accent)"><i data-lucide="book-open"></i></div><div class="stat-val" id="d-courses">0</div><div class="stat-lbl">Courses</div></div>
+                <div class="stat-card"><div class="stat-card-icon" style="background:rgba(16,185,129,0.1);color:var(--success)"><i data-lucide="clipboard-check"></i></div><div class="stat-val" id="d-enrollments">0</div><div class="stat-lbl">Enrollments</div></div>
+                <div class="stat-card"><div class="stat-card-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i data-lucide="user-check"></i></div><div class="stat-val" id="d-lecturers">0</div><div class="stat-lbl">Lecturers</div></div>
+                <div class="stat-card"><div class="stat-card-icon" style="background:rgba(239,68,68,0.1);color:var(--danger)"><i data-lucide="credit-card"></i></div><div class="stat-val" id="d-payments">0</div><div class="stat-lbl">Payments</div></div>
+                <div class="stat-card"><div class="stat-card-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6"><i data-lucide="banknote"></i></div><div class="stat-val" id="d-revenue">Rs.0</div><div class="stat-lbl">Revenue</div></div>
+            </div>
+        </div>
+
+        <!-- STUDENTS -->
+        <div class="section" id="sec-students">
+            <div class="section-header">
+                <div class="page-header"><h1>Students</h1><p>Manage student records</p></div>
+                <button class="btn btn-primary" onclick="openModal('student')"><i data-lucide="plus" style="width:16px;height:16px"></i> Add Student</button>
+            </div>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Type</th><th>Fee (Rs.)</th><th>Actions</th></tr></thead><tbody id="studentTbl"></tbody></table></div>
+        </div>
+
+        <!-- COURSES -->
+        <div class="section" id="sec-courses">
+            <div class="section-header">
+                <div class="page-header"><h1>Courses</h1><p>Manage course catalog</p></div>
+                <button class="btn btn-primary" onclick="openModal('course')"><i data-lucide="plus" style="width:16px;height:16px"></i> Add Course</button>
+            </div>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Course Name</th><th>Credits</th><th>Department</th><th>Max Students</th><th>Fee (Rs.)</th><th>Type</th><th>Actions</th></tr></thead><tbody id="courseTbl"></tbody></table></div>
+        </div>
+
+        <!-- ENROLLMENTS -->
+        <div class="section" id="sec-enrollments">
+            <div class="section-header">
+                <div class="page-header"><h1>Enrollments</h1><p>Student-Course registrations</p></div>
+                <button class="btn btn-primary" onclick="openModal('enrollment')"><i data-lucide="plus" style="width:16px;height:16px"></i> New Enrollment</button>
+            </div>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Student</th><th>Course</th><th>Date</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead><tbody id="enrollTbl"></tbody></table></div>
+        </div>
+
+        <!-- LECTURERS -->
+        <div class="section" id="sec-lecturers">
+            <div class="section-header">
+                <div class="page-header"><h1>Lecturers</h1><p>Manage lecturer records</p></div>
+                <button class="btn btn-primary" onclick="openModal('lecturer')"><i data-lucide="plus" style="width:16px;height:16px"></i> Add Lecturer</button>
+            </div>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Department</th><th>Type</th><th>Workload</th><th>Actions</th></tr></thead><tbody id="lecturerTbl"></tbody></table></div>
+        </div>
+
+        <!-- SCHEDULES -->
+        <div class="section" id="sec-schedules">
+            <div class="section-header">
+                <div class="page-header"><h1>Lecture Scheduling</h1><p>Manage and timetable classes</p></div>
+                <button class="btn btn-primary" onclick="openModal('schedule')"><i data-lucide="calendar-plus" style="width:16px;height:16px"></i> Schedule Class</button>
+            </div>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Course</th><th>Lecturer</th><th>Date & Time</th><th>Type</th><th>Location/Link</th><th>Actions</th></tr></thead><tbody id="scheduleTbl"></tbody></table></div>
+        </div>
+
+        <!-- PAYMENTS -->
+        <div class="section" id="sec-payments">
+            <div class="section-header">
+                <div class="page-header"><h1>Payments</h1><p>Payment records and history</p></div>
+                <button class="btn btn-primary" onclick="openModal('payment')"><i data-lucide="plus" style="width:16px;height:16px"></i> New Payment</button>
+            </div>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Student</th><th>Course</th><th>Amount</th><th>Date</th><th>Type</th><th>Status</th><th>Ref/Location</th><th>Actions</th></tr></thead><tbody id="paymentTbl"></tbody></table></div>
+        </div>
+
+        <!-- ADMINS -->
+        <div class="section" id="sec-admins">
+            <div class="section-header">
+                <div class="page-header"><h1>System Users</h1><p>Manage admin access</p></div>
+                <button class="btn btn-primary" onclick="openModal('admin')"><i data-lucide="shield-plus" style="width:16px;height:16px"></i> Add Admin</button>
+            </div>
+            <div class="table-wrap"><table><thead><tr><th>Username</th><th>Name</th><th>Actions</th></tr></thead><tbody id="adminTbl"></tbody></table></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 id="modalTitle">Add Record</h2>
+            <button class="modal-close" onclick="closeModal()"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" id="modalSaveBtn" onclick="saveRecord()"><i data-lucide="save" style="width:16px;height:16px"></i> Save</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>lucide.createIcons(); showSection('dashboard');</script>
+</body>
+</html>

@@ -37,7 +37,9 @@
             <div class="nav-item" onclick="showSection('schedules')" id="nav-schedules">
                 <i data-lucide="calendar"></i><span>Scheduling</span>
             </div>
-            <!-- nav-payments disabled -->
+            <div class="nav-item" onclick="showSection('payments')" id="nav-payments">
+                <i data-lucide="credit-card"></i><span>Payments</span>
+            </div>
             <div class="nav-item" onclick="showSection('admins')" id="nav-admins">
                 <i data-lucide="shield"></i><span>System Users</span>
             </div>
@@ -59,8 +61,8 @@
                 <div class="stat-card"><div class="stat-card-icon" style="background:rgba(6,182,212,0.1);color:var(--accent)"><i data-lucide="book-open"></i></div><div class="stat-val" id="d-courses">0</div><div class="stat-lbl">Courses</div></div>
                 <div class="stat-card"><div class="stat-card-icon" style="background:rgba(16,185,129,0.1);color:var(--success)"><i data-lucide="clipboard-check"></i></div><div class="stat-val" id="d-enrollments">0</div><div class="stat-lbl">Enrollments</div></div>
                 <div class="stat-card"><div class="stat-card-icon" style="background:rgba(245,158,11,0.1);color:var(--warning)"><i data-lucide="user-check"></i></div><div class="stat-val" id="d-lecturers">0</div><div class="stat-lbl">Lecturers</div></div>
-                <!-- payments card hidden -->
-                <!-- revenue card hidden -->
+                <div class="stat-card"><div class="stat-card-icon" style="background:rgba(239,68,68,0.1);color:var(--danger)"><i data-lucide="credit-card"></i></div><div class="stat-val" id="d-payments">0</div><div class="stat-lbl">Payments</div></div>
+                <div class="stat-card"><div class="stat-card-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6"><i data-lucide="banknote"></i></div><div class="stat-val" id="d-revenue">Rs.0</div><div class="stat-lbl">Revenue</div></div>
             </div>
         </div>
 
@@ -110,7 +112,13 @@
         </div>
 
         <!-- PAYMENTS -->
-        <!-- sec-payments disabled -->
+        <div class="section" id="sec-payments">
+            <div class="section-header">
+                <div class="page-header"><h1>Payments</h1><p>Payment records and history</p></div>
+                <button class="btn btn-primary" onclick="openModal('payment')"><i data-lucide="plus" style="width:16px;height:16px"></i> New Payment</button>
+            </div>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>Student</th><th>Course</th><th>Amount</th><th>Date</th><th>Type</th><th>Status</th><th>Ref/Location</th><th>Actions</th></tr></thead><tbody id="paymentTbl"></tbody></table></div>
+        </div>
 
         <!-- ADMINS -->
         <div class="section" id="sec-admins">

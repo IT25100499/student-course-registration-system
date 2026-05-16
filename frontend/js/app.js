@@ -20,7 +20,7 @@ function showSection(name) {
     else if (name === 'enrollments') loadEnrollments();
     else if (name === 'lecturers') loadLecturers();
     else if (name === 'schedules') loadSchedules();
-    
+    else if (name === 'payments') loadPayments();
     else if (name === 'admins') loadAdmins();
     lucide.createIcons();
 }
@@ -65,7 +65,7 @@ async function loadDashboard() {
             
             const payList = await (await fetch(`${API}/api/payments`)).json();
             const myPayCount = payList.filter(p => p.studentId === username).length;
-            
+            document.getElementById('d-payments').textContent = myPayCount;
             
             document.getElementById('d-courses').textContent = d.courses;
             document.getElementById('d-lecturers').textContent = d.lecturers;
@@ -74,7 +74,7 @@ async function loadDashboard() {
             document.getElementById('d-courses').textContent = d.courses;
             document.getElementById('d-enrollments').textContent = d.enrollments;
             document.getElementById('d-lecturers').textContent = d.lecturers;
-            
+            document.getElementById('d-payments').textContent = d.payments;
             document.getElementById('d-revenue').textContent = 'Rs.' + d.revenue.toLocaleString('en',{minimumFractionDigits:2});
         }
     } catch(e) { console.error(e); }
@@ -156,7 +156,28 @@ async function loadLecturers() {
     lucide.createIcons();
 }
 
-/* loadPayments disabled */
+async function loadPayments() {
+    let data = await (await fetch(`${API}/api/payments`)).json();
+    const tb = document.getElementById('paymentTbl');
+    
+    if (userRole === 'student') {
+        data = data.filter(p => p.studentId === username);
+    }
+    
+    if(!data.length) { tb.innerHTML = emptyRow(9,'credit-card','No payment records'); return; }
+    tb.innerHTML = data.map(p => `<tr>
+        <td><strong>${p.paymentId}</strong></td><td>${p.studentId}</td><td>${p.courseId}</td><td>Rs.${p.amount.toLocaleString()}</td><td>${p.paymentDate}</td>
+        <td><span class="badge ${p.paymentType==='Online'?'badge-primary':'badge-warning'}">${p.paymentType}</span></td>
+        <td><span class="badge ${p.status==='Completed'?'badge-success':p.status==='Pending'?'badge-warning':'badge-danger'}">${p.status}</span></td>
+        <td>${p.extraField}</td>
+        <td class="actions">
+            ${userRole === 'admin' ? `
+                <button class="btn btn-ghost btn-sm" onclick="updPayStatus('${p.paymentId}')"><i data-lucide="refresh-cw" style="width:14px;height:14px"></i></button>
+                <button class="btn btn-ghost btn-sm" style="color:var(--danger)" onclick="delRecord('payments','${p.paymentId}')"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+            ` : `<span style="color:var(--text-muted);font-size:12px">Processed</span>`}
+        </td></tr>`).join('');
+    lucide.createIcons();
+}
 
 async function loadAdmins() {
     const data = await (await fetch(`${API}/api/admins`)).json();
@@ -217,8 +238,15 @@ function openModal(type) {
             ${field('m-ldept','Department','text','Department')}${field('m-lcourse','Assigned Course','text','Course ID or None')}
             <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="m-ltype" onchange="toggleLF()"><option value="Permanent">Permanent</option><option value="Visiting">Visiting</option></select></div>
             <div id="lfWrap">${field('m-lex','Years of Experience','number','5')}</div>`; },
-        /* payment modal disabled */
-        /* paymentStatus modal disabled */
+        payment: ()=>{ title.textContent='New Payment'; body.innerHTML=`
+            ${field('m-psid','Student ID','text','e.g. S001')}${field('m-pcid','Course ID','text','e.g. C001')}
+            ${field('m-pamt','Amount (Rs.)','number','0')}
+            <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="m-ptype" onchange="togglePF()"><option value="Online">Online</option><option value="Cash">Cash</option></select></div>
+            <div id="pfWrap">${field('m-pex','Transaction Ref','text','Reference')}</div>
+            <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="m-pst"><option value="Completed">Completed</option><option value="Pending">Pending</option></select></div>`; },
+        paymentStatus: ()=>{ title.textContent='Update Payment Status'; body.innerHTML=`
+            <div class="form-group"><label class="form-label">Payment Status</label><select class="form-select" id="m-upst"><option value="Completed">Completed</option><option value="Pending">Pending</option><option value="Failed">Failed</option></select></div>
+            <p style="color:var(--text-muted);font-size:13px;margin-top:12px">Select the new status for this payment record.</p>`; },
         admin: ()=>{ title.textContent='Add Admin'; body.innerHTML=`
             ${field('m-ausr','Username','text','e.g. admin2')}
             ${field('m-aname','Full Name','text','Name')}
@@ -263,7 +291,23 @@ function openModal(type) {
             const sidInput = document.getElementById('m-esid');
             if (sidInput) { sidInput.value = username; sidInput.readOnly = true; }
         }
-         {
+        if (type === 'payment') {
+            const sidInput = document.getElementById('m-psid');
+            if (sidInput) { sidInput.value = username; sidInput.readOnly = true; }
+            
+            // Set payment status as Pending for students
+            const stSelect = document.getElementById('m-pst');
+            if (stSelect) { stSelect.value = 'Pending'; }
+        }
+    }
+    
+    const res = forms[type]();
+    if (res instanceof Promise) {
+        return res.then(() => {
+            document.getElementById('modalOverlay').classList.add('active');
+            lucide.createIcons();
+        });
+    } else {
         document.getElementById('modalOverlay').classList.add('active');
         lucide.createIcons();
     }
@@ -324,7 +368,11 @@ async function saveRecord() {
             data = {lecturerId:v('m-lid'),name:v('m-lname'),email:v('m-lemail'),phone:v('m-lphone'),department:v('m-ldept'),assignedCourseId:v('m-lcourse'),lecturerType:v('m-ltype'),extraField:v('m-lex')};
             url = editingId ? `${API}/api/lecturers/${editingId}` : `${API}/api/lecturers`;
             method = editingId ? 'PUT' : 'POST';
-        }  if (currentModal==='paymentStatus') {
+        } else if (currentModal==='payment') {
+            const ex = v('m-ptype')==='Online' ? v('m-pex') : v('m-pex');
+            data = {studentId:v('m-psid'),courseId:v('m-pcid'),amount:v('m-pamt'),paymentType:v('m-ptype'),status:v('m-pst'),extraField:ex};
+            url = `${API}/api/payments`; method = 'POST';      
+        } else if (currentModal==='paymentStatus') {
             data = {status:v('m-upst')};
             url = `${API}/api/payments/${editingId}`;
             method = 'PUT';
@@ -347,7 +395,7 @@ async function saveRecord() {
             toast(currentModal==='confirmDelete' ? 'Deleted successfully!' : 'Record saved successfully!','success'); 
             let sec = currentModal + 's';
             if(currentModal === 'enrollment') sec = 'enrollments';
-            
+            if(currentModal === 'paymentStatus') sec = 'payments';
             if(currentModal === 'admin') sec = 'admins';
             if(currentModal === 'confirmDelete') sec = v('m-delmod');
             showSection(sec); 
@@ -387,7 +435,7 @@ async function dropEnroll(id) {
     if(r.success){toast('Dropped!','success');loadEnrollments();}else toast('Failed','error');
 }
 async function updPayStatus(id) {
-    
+    openModal('paymentStatus');
     editingId = id;
 }
 

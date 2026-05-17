@@ -1,0 +1,3 @@
+L001|Dr. Wijesinghe|wijesinghe@uni.com|0771111111|Computing|C001|Permanent|15
+L002|Ms. Rathnayake|rathnayake@uni.com|0772222222|Computing|C002|Permanent|5
+L003|Mr. Jayasena|jayasena@uni.com|0773333333|Computing|C003|Visiting|12
